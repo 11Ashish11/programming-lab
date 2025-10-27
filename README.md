@@ -19,7 +19,7 @@ Since most students do not have access to high-end GPUs, this lab uses **smaller
 In this lab, you will:
 
 1. Learn how to **load and use pre-trained transformer models** from the [Hugging Face Transformers](https://huggingface.co/transformers) library.
-2. Experiment with **token prediction**, **semantic similarity**, and **classification**.
+2. Experiment with **token prediction** and **semantic similarity**.
 3. Visualize and interpret model outputs to understand how predictions are made.
 4. See how the same underlying technology used in ChatGPT can be applied to small, focused tasks on your own computer.
 

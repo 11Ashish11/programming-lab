@@ -7,11 +7,16 @@ example documents.
 """
 
 from typing import List,Optional
-from transformers import AutoTokenizer, AutoModel
+import sys
+from pathlib import Path
+
 import torch
 import numpy as np
 from collections import defaultdict
 from pydantic import BaseModel
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from model_loader import setup_embedding_model
 
 # This holds one of the search results
 class SearchResult(BaseModel):
@@ -20,15 +25,6 @@ class SearchResult(BaseModel):
     similarity:float = 0
     rank:int = 0
     
-
-def setup_embedding_model():
-    """Load a small, fast embedding model"""
-    model_name = 'sentence-transformers/all-MiniLM-L6-v2'
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
-    model = AutoModel.from_pretrained(model_name)
-    model.eval()
-    return tokenizer, model
-
 
 def get_embedding(text, tokenizer, model):
     """Get embedding vector for a piece of text"""
@@ -62,13 +58,19 @@ def execute_search(query:str, documents:List[str]) -> List[SearchResult]:
     #     you can store the embeddings and the cosine similarity in each
     #     result object.
     results:List[SearchResult] = [SearchResult(text=d) for d in documents]
-    
-    # 2 - TODO Set up the model
-    
-    # 3 - TODO Calculate query and document embeddings
-    
-    # 4 - TODO Calculate similarities between the query and each document
-    
+
+    # 2 - Set up the model
+    tokenizer, model = setup_embedding_model()
+
+    # 3 - Calculate query and document embeddings
+    query_embedding = get_embedding(query, tokenizer, model)
+    for res in results:
+        res.embeddings = get_embedding(res.text, tokenizer, model).tolist()
+
+    # 4 - Calculate similarities between the query and each document
+    for res in results:
+        res.similarity = float(cosine_similarity(query_embedding, res.embeddings))
+
     # 5 - Sort search results by similarity and assign its rank
     results.sort(key=lambda r:r.similarity, reverse=True)
     for idx,res in enumerate(results):

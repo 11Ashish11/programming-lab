@@ -3,19 +3,15 @@ GPT2 Token-by-Token Story Generation Demo
 This script demonstrates how GPT2 generates text one token at a time.
 """
 
-from transformers import GPT2LMHeadModel, GPT2Tokenizer
+import sys
+from pathlib import Path
+
 import torch
 import time
 import random
 
-def setup_model():
-    """Load GPT2 model and tokenizer"""
-    print("Loading GPT2 model... (this may take a moment)")
-    model = GPT2LMHeadModel.from_pretrained('gpt2')
-    tokenizer = GPT2Tokenizer.from_pretrained('gpt2')
-    model.eval()  # Set to evaluation mode
-    print("Model loaded!\n")
-    return model, tokenizer
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from model_loader import setup_model
 
 def complete_sentence(prompt:str, *, max_tokens:int=40, temperature:float=0.8):
     """

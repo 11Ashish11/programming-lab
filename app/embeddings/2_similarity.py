@@ -5,22 +5,15 @@ and what they can do
 """
 
 from typing import List, Tuple
-from transformers import AutoTokenizer, AutoModel
+import sys
+from pathlib import Path
+
 import torch
 import numpy as np
 from collections import defaultdict
 
-def setup_embedding_model():
-    """Load a small, fast embedding model"""
-    print("Loading embedding model... (this may take a moment)")
-    
-    model_name = 'sentence-transformers/all-MiniLM-L6-v2'
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
-    model = AutoModel.from_pretrained(model_name)
-    model.eval()
-    
-    print("Model loaded!\n")
-    return tokenizer, model
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from model_loader import setup_embedding_model
 
 
 def get_embedding(text, tokenizer, model):
@@ -93,7 +86,6 @@ def similarity_demo(comparisons:List[Tuple[str,str]]):
         print(f'Text 1: "{text1}"')
         print(f'Text 2: "{text2}"')
         print(f'Similarity: [{bar}] {similarity:.3f} {emoji} {level}')
-        print(f'Why? {explanation}')
         print()
         
     print("=" * 70)

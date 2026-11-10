@@ -4,18 +4,14 @@ This script demonstrates how GPT2 generates text one token at a time,
 making it visible and understandable for students.
 """
 
-from transformers import GPT2LMHeadModel, GPT2Tokenizer
+import sys
+from pathlib import Path
+
 import torch
 import time
 
-def setup_model():
-    """Load GPT2 model and tokenizer"""
-    print("Loading GPT2 model... (this may take a moment)")
-    model = GPT2LMHeadModel.from_pretrained('gpt2')
-    tokenizer = GPT2Tokenizer.from_pretrained('gpt2')
-    model.eval()  # Set to evaluation mode
-    print("Model loaded!\n")
-    return model, tokenizer
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from model_loader import setup_model
 
 
 def interactive_token_choice(prompt, model, tokenizer, max_tokens=50, temperature=0.8, num_choices=5):

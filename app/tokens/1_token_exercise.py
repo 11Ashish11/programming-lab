@@ -3,28 +3,22 @@ GPT2 Token-by-Token Story Generation Demo
 This script demonstrates how GPT2 generates text one token at a time.
 """
 
-from transformers import GPT2LMHeadModel, GPT2Tokenizer
+import sys
+from pathlib import Path
+
 import torch
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from model_loader import setup_model
 
-def setup_model():
-    """Load GPT2 model and tokenizer"""
-    model = GPT2LMHeadModel.from_pretrained('gpt2')
-    tokenizer = GPT2Tokenizer.from_pretrained('gpt2')
-    model.eval()
-    return model, tokenizer
 
-def generate_token(prompt:str, *, temperature:float=0.8) -> str:
+def generate_token(prompt:str, *, temperature:float=0.8, model=None, tokenizer=None) -> str:
     """
-    Generates up to 40 tokens following the starting
-    sentence.
+    Generates the next token following the starting sentence.
     """
     
-    # Load the model
-    model, tokenizer = setup_model()
-    
-    #First, the input is converted into vector or tensor
-    input_ids = tokenizer.encode(prompt, return_tensors='pt')
+    if model is None or tokenizer is None:
+        model, tokenizer = setup_model()
     
     #First, the input is converted into vector or tensor
     input_ids = tokenizer.encode(prompt, return_tensors='pt')
@@ -50,8 +44,10 @@ def complete_sentence(prompt:str, *, max_tokens:int=40):
     Generate a sentence using token generation.
     """
     
-    # TODO Use looping to continue the sentence max_tokens times
-    
+    model, tokenizer = setup_model()
+    for _ in range(max_tokens):
+        prompt += generate_token(prompt, model=model, tokenizer=tokenizer)
+
     # Print the complete output
     print("\n\n" + "=" * 70 + "\n" +prompt + "\n" + ("=" * 70) + "\n\n")
     
